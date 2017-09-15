@@ -18,6 +18,7 @@ class SimpleFile(object):
                     values.append(int(i))
                 self.numbers.append(values)
 
+
     def get_mean(self, line_number):
         """
         get_mean retrieves the mean value of the list by line_number (starts
@@ -34,6 +35,7 @@ class SimpleFile(object):
         """
         arr = self.numbers[line_number]
         return max(arr)
+
 
     def get_min(self, line_number):
         """
