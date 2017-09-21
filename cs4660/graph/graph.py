@@ -195,9 +195,10 @@ class AdjacencyMatrix(object):
         if node not in self.nodes:
             return False
         else:
+            node_index = self.__get_node_index(node)
             for y in self.adjacency_matrix:
-                y.pop(self.__get_node_index(node))
-            self.adjacency_matrix.remove(self.adjacency_matrix[self.__get_node_index(node)])
+                y.pop(node_index)
+            self.adjacency_matrix.remove(self.adjacency_matrix[node_index])
             self.nodes.remove(node)
             return True
 
@@ -205,12 +206,14 @@ class AdjacencyMatrix(object):
         from_node = edge.from_node
         to_node = edge.to_node
         weight = edge.weight
+        from_node_index = self.__get_node_index(from_node)
+        to_node_index = self.__get_node_index(to_node)
         if to_node not in self.nodes or from_node not in self.nodes:
             return False
-        elif self.adjacency_matrix[self.__get_node_index(from_node)][self.__get_node_index(to_node)] > 0:
+        elif self.adjacency_matrix[from_node_index][to_node_index] > 0:
             return False
         else:
-            self.adjacency_matrix[self.__get_node_index(from_node)][self.__get_node_index(to_node)] = weight
+            self.adjacency_matrix[from_node_index][to_node_index] = weight
             return True
 
 
@@ -218,8 +221,10 @@ class AdjacencyMatrix(object):
     def remove_edge(self, edge):
         from_node = edge.from_node
         to_node = edge.to_node
-        if self.adjacency_matrix[from_node.data][to_node.data] > 0:
-            self.adjacency_matrix[from_node.data][to_node.data] = 0
+        from_node_index = self.__get_node_index(from_node)
+        to_node_index = self.__get_node_index(to_node)
+        if self.adjacency_matrix[from_node_index][to_node_index] > 0:
+            self.adjacency_matrix[from_node_index][to_node_index] = 0
             return True
         else:
             return False
