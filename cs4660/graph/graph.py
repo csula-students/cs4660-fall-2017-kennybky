@@ -111,13 +111,13 @@ class AdjacencyList(object):
         self.adjacency_list = {}
 
     def adjacent(self, node_1, node_2):
-        if node_2 in self.adjacency_list[node_1]:
+        if node_2 in [x.to_node for x in self.adjacency_list[node_1]]:
             return True
         else:
             return False
 
     def neighbors(self, node):
-        return self.adjacency_list[node]
+        return [x.to_node for x in self.adjacency_list[node]]
 
     def add_node(self, node):
         if node in self.adjacency_list.keys():
@@ -126,36 +126,39 @@ class AdjacencyList(object):
             self.adjacency_list[node] = []
             return True
 
+
     def remove_node(self, node):
         if node in self.adjacency_list.keys():
             for n in self.adjacency_list:
-                if node in self.adjacency_list[n]:
-                    self.adjacency_list[n].remove(node)
+                for x in self.adjacency_list[n]:
+                    if node == x.to_node:
+                        self.adjacency_list[n].remove(x)
             del self.adjacency_list[node]
             return True
         else:
             return False
 
+    
     def add_edge(self, edge):
         from_node = edge.from_node
         to_node = edge.to_node
+        weight = edge.weight
         if from_node not in self.adjacency_list.keys() or to_node not in self.adjacency_list.keys():
             return False
-        elif to_node in self.adjacency_list[from_node]:
+        elif to_node in [x.to_node for x in self.adjacency_list[from_node]]:
             return False
         else:
-            self.adjacency_list[from_node].append(to_node)
+            self.adjacency_list[from_node].append(edge)
             return True
 
     def remove_edge(self, edge):
         from_node = edge.from_node
-        to_node = edge.to_node
-        if from_node not in self.adjacency_list.keys() or to_node not in self.adjacency_list.keys():
+        if from_node not in self.adjacency_list.keys():
             return False
-        elif to_node not in self.adjacency_list[from_node]:
+        elif edge not in self.adjacency_list[from_node]:
             return False
         else:
-            self.adjacency_list[from_node].remove(to_node)
+            self.adjacency_list[from_node].remove(edge)
             return True
 
 class AdjacencyMatrix(object):
