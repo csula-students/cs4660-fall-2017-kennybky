@@ -57,6 +57,7 @@ def construct_graph_from_file(graph, file_path):
         graph.add_edge(edge)
     return graph
 
+
 def getNode(data, nodes):
     for x in nodes:
         if x.data == data:
