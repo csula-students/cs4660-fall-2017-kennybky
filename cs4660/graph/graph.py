@@ -161,6 +161,17 @@ class AdjacencyList(object):
         else:
             self.adjacency_list[from_node].remove(edge)
             return True
+    def distance(self, from_node, to_node):
+        for x in self.adjacency_list[from_node]:
+            if x.to_node == to_node:
+                return x.weight
+        return 0
+
+    def get_edge(self, from_node, to_node):
+        for x in self.adjacency_list[from_node]:
+            if x.to_node == to_node:
+                return x
+        return None
 
 class AdjacencyMatrix(object):
     def __init__(self):
@@ -237,6 +248,13 @@ class AdjacencyMatrix(object):
         """helper method to find node index"""
         return self.nodes.index(node)
 
+    def distance(self, from_node, to_node):
+        return self.adjacency_matrix[self.__get_node_index(from_node)][self.__get_node_index(to_node)]
+
+    def get_edge(self, from_node, to_node):
+        weight =  self.adjacency_matrix[self.__get_node_index(from_node)][self.__get_node_index(to_node)]
+        return Edge(from_node, to_node, weight)
+
 class ObjectOriented(object):
     """ObjectOriented defines the edges and nodes as both list"""
     def __init__(self):
@@ -291,3 +309,14 @@ class ObjectOriented(object):
         else:
             return False
 
+    def distance(self, from_node, to_node):
+        for edge in self.edges:
+            if edge.from_node ==from_node and edge.to_node == to_node:
+                return edge.weight
+        return 0
+
+    def get_edge(self, from_node, to_node):
+        for edge in self.edges:
+            if edge.from_node ==from_node and edge.to_node == to_node:
+                return edge
+        return None
