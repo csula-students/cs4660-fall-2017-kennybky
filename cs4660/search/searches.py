@@ -113,7 +113,6 @@ def a_star_search(graph, initial_node, dest_node):
     distance[initial_node] = 0
     priority[initial_node] = 0
     q = PriorityQueue()
-    #q.build_min_heap(graph.nodes, distance)
     q.insert(initial_node, priority)
     while q.queue:
         node = q.extract_min(priority)
@@ -126,10 +125,7 @@ def a_star_search(graph, initial_node, dest_node):
                 p = new_cost + heuristic(child, dest_node)
                 priority[child] = p
                 parents[child] = node
-                #index = q.index[child]
-                #q.reduce_key(index, priority)
                 q.insert(child, priority)
-    #return parents
     return print_path(graph, initial_node, dest_node, [], parents)
 
 def heuristic(node, goal):
@@ -142,7 +138,6 @@ def heuristic(node, goal):
 class PriorityQueue(object):
     def __init__(self):
         self.queue = []
-        self.index = {}
 
     def parent(self, i):
         return int(math.ceil((i/float(2)) - 1))
@@ -155,12 +150,11 @@ class PriorityQueue(object):
 
     def extract_min(self, priority):
         if len(self.queue) > 0:
-            min = self.queue[0]
-            self.index[min] = -1
+            minimum = self.queue[0]
             self.queue[0] = self.queue[len(self.queue)-1]
             self.queue.pop(len(self.queue)-1)
             self.min_heapify(0, priority)
-            return min
+            return minimum
     def min_heapify(self, i, priority):
         l = self.left(i)
         r = self.right(i)
@@ -173,18 +167,14 @@ class PriorityQueue(object):
         if largest != i:
             temp = self.queue[i]
             self.queue[i] = self.queue[largest]
-            self.index[self.queue[i]] = i
             self.queue[largest] = temp
-            self.index[self.queue[largest]] = largest
             self.min_heapify(largest, priority)
 
     def reduce_key(self, i, priority):
           while i > 0 and priority[self.queue[self.parent(i)]] > priority[self.queue[i]]:
               temp = self.queue[i]
               self.queue[i] = self.queue[self.parent(i)]
-              self.index[self.queue[i]] = i
               self.queue[self.parent(i)] = temp
-              self.index[self.queue[self.parent(i)]] = self.parent(i)
               i = self.parent(i)
     def insert(self, key, priority):
         self.queue.append(key)
@@ -192,11 +182,8 @@ class PriorityQueue(object):
         self.reduce_key(i, priority)
 
     def build_min_heap(self, a, priority):
-        i = 0
         for node in a:
             self.queue.append(node)
-            self.index[node] = i
-            i +=1
         start = self.parent(len(a)-1)
         for i in range(start, -1, -1):
             self.min_heapify(i, priority)
