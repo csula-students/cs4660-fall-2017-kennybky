@@ -51,7 +51,7 @@ def parse_grid_file(graph, file_path):
                    continue
                else:
                    tile = Tile(k, i-1, fl[i][j] + "" + fl[i][j+1])
-                   graph.add_node(gr.Node(tile))
+                   graph.add_grid_node(gr.Node(tile))
                    if i > 1:
                        if fl[i-1][j] != "#":
                            to_tile = Tile(k, i-2, fl[i-1][j] + "" + fl[i-1][j+1])
@@ -70,7 +70,7 @@ def parse_grid_file(graph, file_path):
                            edges.append(gr.Edge(gr.Node(tile), gr.Node(to_tile), 1))
 
         for edge in edges:
-            graph.add_edge(edge)
+            graph.add_grid_edge(edge)
     #TODO: for each node/edge above, add it to graph
 
     return graph
@@ -95,16 +95,20 @@ def convert_edge_to_grid_actions(edges):
     return ''.join(chars)
 
 """"
-graph = parse_grid_file(gr.ObjectOriented(), '../test/fixtures/grid-1.txt')
+graph = parse_grid_file(gr.AdjacencyList(), '../test/fixtures/grid-2.txt')
 timeStart = time()
-searches.dijkstra_search(graph, gr.Node(Tile(4, 4, "@6")), gr.Node(Tile(3, 0, "@1")))
+#searches.dijkstra_search(graph, gr.Node(Tile(4, 0, "@1")), gr.Node(Tile(201, 206, "@5")))
 totalD = time() - timeStart
 
+
 timeStart = time()
-searches.a_star_search(graph, gr.Node(Tile(4, 4, "@6")), gr.Node(Tile(3, 0, "@1")))
+#searches.a_star_search(graph, gr.Node(Tile(4, 4, "@6")), gr.Node(Tile(3, 0, "@1")))
+
+parents = searches.a_star_search(graph, gr.Node(Tile(3, 0, "@1")), gr.Node(Tile(13, 0, "@8")))
+print convert_edge_to_grid_actions(parents)
 totalA = time() - timeStart
 
-print "dijikstra = " + str(totalD * 1000) + " " + "Astar = " + str(totalA *1000)
+print "dijikstra = " + str(totalD * 1000) + " " + "Astar = " + str(totalA)
 
 
 #graph.neighbors(gr.Node(Tile(4, 4, "@6")))

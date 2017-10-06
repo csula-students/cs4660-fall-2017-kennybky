@@ -110,6 +110,7 @@ class AdjacencyList(object):
     def __init__(self):
         # adjacencyList should be a dictionary of node to edges
         self.adjacency_list = {}
+        self.nodes = []
 
     def adjacent(self, node_1, node_2):
         if node_2 in [x.to_node for x in self.adjacency_list[node_1]]:
@@ -127,6 +128,15 @@ class AdjacencyList(object):
             self.adjacency_list[node] = []
             return True
 
+    def add_grid_node(self, node):
+        self.adjacency_list[node] = []
+        self.nodes.append(node)
+        return True
+
+    def add_grid_edge(self, edge):
+        from_node = edge.from_node
+        self.adjacency_list[from_node].append(edge)
+        return True
 
     def remove_node(self, node):
         if node in self.adjacency_list.keys():
@@ -205,6 +215,24 @@ class AdjacencyMatrix(object):
                 new_row.append(0)
             self.adjacency_matrix.append(new_row)
             return True
+    def add_grid_node(self, node):
+        self.nodes.append(node)
+        for x in range(len(self.adjacency_matrix)):
+            self.adjacency_matrix[x].append(0)
+        new_row = []
+        for y in range(len(self.adjacency_matrix) + 1):
+            new_row.append(0)
+        self.adjacency_matrix.append(new_row)
+        return True
+
+    def add_grid_edge(self, edge):
+        from_node = edge.from_node
+        to_node = edge.to_node
+        weight = edge.weight
+        from_node_index = self.__get_node_index(from_node)
+        to_node_index = self.__get_node_index(to_node)
+        self.adjacency_matrix[from_node_index][to_node_index] = weight
+        return True
 
     def remove_node(self, node):
         if node not in self.nodes:
@@ -282,6 +310,14 @@ class ObjectOriented(object):
         else:
             self.nodes.append(node)
             return True
+
+    def add_grid_node(self, node):
+        self.nodes.append(node)
+        return True
+
+    def add_grid_edge(self, edge):
+        self.edges.append(edge)
+        return True
 
     def remove_node(self, node):
         for e in self.edges:
