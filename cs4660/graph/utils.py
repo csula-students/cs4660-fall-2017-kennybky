@@ -2,11 +2,10 @@
 utils package is for some quick utility methods
 such as parsing
 """
-from graph import Node
-from graph import Edge
+from . import graph as gr
+#from graph import Node, Edge
 from search import searches
 from time import time
-
 class Tile(object):
     """Node represents basic unit of graph"""
     def __init__(self, x, y, symbol):
@@ -27,7 +26,7 @@ class Tile(object):
         return not self.__eq__(other)
 
     def __hash__(self):
-        return hash(str(self.x) + str(self.y) + self.symbol)
+        return hash(str(self.x) + "," + str(self.y) + self.symbol)
 
 
 
@@ -52,23 +51,23 @@ def parse_grid_file(graph, file_path):
                    continue
                else:
                    tile = Tile(k, i-1, fl[i][j] + "" + fl[i][j+1])
-                   graph.add_grid_node(Node(tile))
+                   graph.add_grid_node(gr.Node(tile))
                    if i > 1:
                        if fl[i-1][j] != "#":
                            to_tile = Tile(k, i-2, fl[i-1][j] + "" + fl[i-1][j+1])
-                           edges.append(Edge(Node(tile), Node(to_tile), 1))
+                           edges.append(gr.Edge(gr.Node(tile), gr.Node(to_tile), 1))
                    if i < length - 2:
                        if fl[i+1][j] !="#":
                            to_tile = Tile(k, i, fl[i+1][j] + "" + fl[i+1][j+1])
-                           edges.append(Edge(Node(tile), Node(to_tile), 1))
+                           edges.append(gr.Edge(gr.Node(tile), gr.Node(to_tile), 1))
                    if j < len(fl[i])-4:
                        if fl[i][j+2] != "#":
                            to_tile = Tile(k+1, i-1, fl[i][j+2] + "" + fl[i][j+3])
-                           edges.append(Edge(Node(tile), Node(to_tile), 1))
+                           edges.append(gr.Edge(gr.Node(tile), gr.Node(to_tile), 1))
                    if j > 1:
                        if fl[i][j - 1] != "#":
                            to_tile = Tile(k-1, i-1, fl[i][j - 2] + "" + fl[i][j - 1])
-                           edges.append(Edge(Node(tile), Node(to_tile), 1))
+                           edges.append(gr.Edge(gr.Node(tile), gr.Node(to_tile), 1))
 
         for edge in edges:
             graph.add_grid_edge(edge)
