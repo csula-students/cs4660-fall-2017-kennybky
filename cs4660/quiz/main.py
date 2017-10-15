@@ -11,6 +11,9 @@ TODO: implement Dijkstra utilizing the path with highest effect number
 """
 
 import json
+from Queue import Queue
+from Queue import PriorityQueue
+
 
 # http lib import for Python 2 and 3: alternative 4
 try:
@@ -27,12 +30,13 @@ def bfs(initial_node, dest_node):
     uses graph to do search from the initial_node to dest_node
     returns a list of actions going from the initial node to dest_node
     """
-    q = [initial_node]
+    q = Queue()
+    q.put(initial_node)
     visited = [initial_node['id']]
     parents = {}
     edge_to = {}
-    while q:
-        node = q.pop(0)
+    while not q.empty():
+        node = q.get()
         for c in node['neighbors']:
             child = get_state(c['id'])
             edge = transition_state(node['id'], child['id'])
@@ -47,7 +51,7 @@ def bfs(initial_node, dest_node):
                 visited.append(child['id'])
                 parents[child['id']] = node['id']
                 edge_to[child['id']] = edge
-                q.append(child)
+                q.put(child)
             else:
                 continue
 
@@ -77,26 +81,23 @@ def dijkstra_search(initial_node, dest_node):
     uses graph to do search from the initial_node to dest_node
     returns a list of actions going from the initial node to dest_node
     """
-    q = []
-    q.append((0, initial_node))
+    q = PriorityQueue()
+    q.put((0, initial_node))
     parents = {}
     distance = {initial_node: 0}
     edge_to = {}
     visited = []
-    while len(q) > 0:
-        node =get_state(q.pop()[1])
+    while not q.empty():
+        node =get_state(q.get()[1])
         visited.append(node['id'])
         for child in node['neighbors']:
             edge = transition_state(node['id'], child['id'])
             weight = distance[node['id']] + int(edge['event']['effect'])
             if child['id'] not in visited and (child['id'] not in distance or weight > distance[child['id']]):
-                if child['id'] in distance:
-                    q.remove((distance[child['id']], child['id']))
-                q.append((weight, child['id']))
+                q.put((-weight, child['id']))
                 distance[child['id']] = weight
                 parents[child['id']] = node['id']
                 edge_to[child['id']] = edge
-        q = sorted(q, key=lambda x:x[0])
     path = print_path(dest_node, parents, edge_to)
     output_path(path, initial_node)
 
@@ -138,14 +139,22 @@ def __json_request(target_url, body):
     response = json.load(urlopen(req, jsondataasbytes))
     return response
 
+def parse_graph(url):
+    req = Request(url)
+    req.add_header('Content-Type', 'application/json; charset=utf-8')
+    response = json.load(urlopen(req))
+    return response
+
 if __name__ == "__main__":
     # Your code starts here
     empty_room = get_state('7f3dc077574c013d98b2de8f735058b4')
     dest_room = get_state('f1f131f647621a4be7c71292e79613f9')
-    bfs(empty_room, dest_room)
+    #bfs(empty_room, dest_room)
     start = '7f3dc077574c013d98b2de8f735058b4'
     end = 'f1f131f647621a4be7c71292e79613f9'
     dijkstra_search(start, end)
+    #url = 'http://192.241.218.106:9000/secret'
+   # parse_graph(url)
 
 
 
