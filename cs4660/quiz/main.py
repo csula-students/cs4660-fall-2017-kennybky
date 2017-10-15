@@ -101,15 +101,6 @@ def dijkstra_search(initial_node, dest_node):
     path = print_path(dest_node, parents, edge_to)
     output_path(path, initial_node)
 
-def extract_min(q, distance):
-    minimum = q[0]
-    for node in q:
-        if distance[node['id']] < distance[minimum['id']]:
-            minimum = node
-    q.remove(minimum)
-    return minimum
-
-
 def get_state(room_id):
     """
     get the room by its id and its neighbor
@@ -139,22 +130,18 @@ def __json_request(target_url, body):
     response = json.load(urlopen(req, jsondataasbytes))
     return response
 
-def parse_graph(url):
-    req = Request(url)
-    req.add_header('Content-Type', 'application/json; charset=utf-8')
-    response = json.load(urlopen(req))
-    return response
 
 if __name__ == "__main__":
     # Your code starts here
     empty_room = get_state('7f3dc077574c013d98b2de8f735058b4')
     dest_room = get_state('f1f131f647621a4be7c71292e79613f9')
-    #bfs(empty_room, dest_room)
+    print ("\nBFS Path")
+    bfs(empty_room, dest_room)
     start = '7f3dc077574c013d98b2de8f735058b4'
     end = 'f1f131f647621a4be7c71292e79613f9'
+    print ("\nDijkstra Path")
     dijkstra_search(start, end)
-    #url = 'http://192.241.218.106:9000/secret'
-   # parse_graph(url)
+
 
 
 
