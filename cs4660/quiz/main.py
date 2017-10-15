@@ -30,37 +30,46 @@ def bfs(initial_node, dest_node):
     q = [initial_node]
     visited = [initial_node['id']]
     parents = {}
+    edge_to = {}
     while q:
         node = q.pop(0)
         for c in node['neighbors']:
             child = get_state(c['id'])
+            edge = transition_state(node['id'], child['id'])
             if child['id'] == dest_node['id']:
                 visited.append(child['id'])
                 parents[child['id']] = node['id']
-                total = 0
-                return print_path(initial_node['id'], dest_node['id'], [], parents, total)
+                edge_to[child['id']] = edge
+                path = print_path(dest_node['id'], parents, edge_to)
+                output_path(path, initial_node['id'])
+                return
             elif child['id'] not in visited:
                 visited.append(child['id'])
                 parents[child['id']] = node['id']
+                edge_to[child['id']] = edge
                 q.append(child)
             else:
                 continue
 
 
-def print_path(initial_node, dest_node, path, parents, total):
-    if dest_node == initial_node:
-        return path
-    elif parents[dest_node] is None:
-        return None
-    else:
-        effect = transition_state(parents[dest_node], dest_node)['event']['effect']
-        total += effect
-        dest_name = get_state(dest_node)['location']['name']
-        parent_name = get_state(parents[dest_node])['location']['name']
-        path.insert(0, parent_name + "(" + parents[dest_node] + "):"
-                    + dest_name + "(" + dest_node + "):" + str(effect))
-        print_path(initial_node, parents[dest_node], path, parents, total)
-        return path, effect
+def print_path(node_id, parents, edge_to):
+    path = []
+    while node_id in parents:
+        path.append(edge_to[node_id])
+        node_id = parents[node_id]
+    path.reverse()
+    return path
+
+def output_path(path, start):
+    prev_id = start
+    total = 0
+    for p in path:
+        prev_node = get_state(prev_id)
+        next_id = p['id']
+        total += p['event']['effect']
+        print ("%s(%s):%s(%s): %i" % (prev_node['location']['name'], prev_id, p['action'], p['id'], p['event']['effect']))
+        prev_id = next_id
+    print("\nTotalHP: %i" % total)
 
 def dijkstra_search(initial_node, dest_node):
     """
@@ -68,22 +77,28 @@ def dijkstra_search(initial_node, dest_node):
     uses graph to do search from the initial_node to dest_node
     returns a list of actions going from the initial node to dest_node
     """
-    q = [initial_node]
-    parents = {initial_node['id']: None}
-    distance = {initial_node['id']: 0}
-    visited = [initial_node['id']]
-    while q:
-        node = extract_min(q, distance)
+    q = []
+    q.append((0, initial_node))
+    parents = {}
+    distance = {initial_node: 0}
+    edge_to = {}
+    visited = []
+    while len(q) > 0:
+        node =get_state(q.pop()[1])
+        visited.append(node['id'])
         for child in node['neighbors']:
-            if child in visited:
-                continue
-            if child['id'] not in distance.keys():
-                distance[child['id']] = 0
-                q.append(child)
-            if distance[child['id']] < (distance[node['id']] + int(transition_state(node['id'], child['id'])['event']['effect'])):
-                distance[child['id']] = (distance[node] + int(transition_state(node['id'], child['id'])['event']['effect']))
+            edge = transition_state(node['id'], child['id'])
+            weight = distance[node['id']] + int(edge['event']['effect'])
+            if child['id'] not in visited and (child['id'] not in distance or weight > distance[child['id']]):
+                if child['id'] in distance:
+                    q.remove((distance[child['id']], child['id']))
+                q.append((weight, child['id']))
+                distance[child['id']] = weight
                 parents[child['id']] = node['id']
-    return print_path(initial_node['id'], dest_node['id'], [], parents)
+                edge_to[child['id']] = edge
+        q = sorted(q, key=lambda x:x[0])
+    path = print_path(dest_node, parents, edge_to)
+    output_path(path, initial_node)
 
 def extract_min(q, distance):
     minimum = q[0]
@@ -127,11 +142,10 @@ if __name__ == "__main__":
     # Your code starts here
     empty_room = get_state('7f3dc077574c013d98b2de8f735058b4')
     dest_room = get_state('f1f131f647621a4be7c71292e79613f9')
-    print(empty_room)
-    #print (empty_room['neighbors'][1])
-    #print (get_state(empty_room['neighbors'][1]['id']))
-    print(transition_state(empty_room['id'], empty_room['neighbors'][0]['id']))
-    print
-    #print empty_room['location']['name']
-    print bfs(empty_room, dest_room)
-    #print dijkstra_search(empty_room, dest_room)
+    bfs(empty_room, dest_room)
+    start = '7f3dc077574c013d98b2de8f735058b4'
+    end = 'f1f131f647621a4be7c71292e79613f9'
+    dijkstra_search(start, end)
+
+
+
