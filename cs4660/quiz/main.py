@@ -116,6 +116,8 @@ def dijkstra_search(g, initial_node, dest_node):
     visited = []
     while not q.empty():
         node =q.get()[1]
+        if node in visited:
+            continue
         visited.append(node)
         for child in g.neighbors(node):
             edge = g.distance(node, child)
